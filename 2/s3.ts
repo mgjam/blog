@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/core');
 import s3 = require('@aws-cdk/aws-s3');
 import iam = require('@aws-cdk/aws-iam');
 
-export class JavaScriptArtifactsS3 {
+export class S3 {
     public static create(scope: cdk.Construct) {
         const user = this.createUser(scope);
         const accessKey = this.createAccessKey(scope, user);
