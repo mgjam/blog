@@ -431,13 +431,3 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-# CDK JS
-*.js
-!jest.config.js
-*.d.ts
-node_modules
-
-# CDK asset staging directory
-.cdk.staging
-cdk.out
