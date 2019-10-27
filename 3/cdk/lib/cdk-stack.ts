@@ -19,13 +19,13 @@ export class CdkStack extends cdk.Stack {
 
     private createOutputLambda(): lambda.Function {
         const name = 'OutputLambda';
-    
+
         return new lambda.Function(this, name, {
-          functionName: name,
-          runtime: lambda.Runtime.DOTNET_CORE_2_1,
-          code: lambda.Code.asset('../src/appsync/bin/Release/netcoreapp2.1/publish'),
-          handler: 'appsync::appsync.Function::FunctionHandler',
-          timeout: cdk.Duration.seconds(15)
+            functionName: name,
+            runtime: lambda.Runtime.DOTNET_CORE_2_1,
+            code: lambda.Code.asset('../src/appsync/bin/Release/netcoreapp2.1/publish'),
+            handler: 'appsync::appsync.Function::FunctionHandler',
+            timeout: cdk.Duration.seconds(15)
         });
     }
 
@@ -82,7 +82,7 @@ export class CdkStack extends cdk.Stack {
     ): appsync.CfnDataSource {
         const name = 'OutputDataSource';
         const invokeRole = this.createOutputLambdaInvokeRole(outputLambda);
-        const consignmentsDataSource = new appsync.CfnDataSource(this, name, {
+        const outputDataSource = new appsync.CfnDataSource(this, name, {
             apiId: api.attrApiId,
             name: name,
             type: 'AWS_LAMBDA',
@@ -92,9 +92,9 @@ export class CdkStack extends cdk.Stack {
             serviceRoleArn: invokeRole.roleArn
         });
 
-        consignmentsDataSource.addDependsOn(api);
+        outputDataSource.addDependsOn(api);
 
-        return consignmentsDataSource;
+        return outputDataSource;
     }
 
     private createOutputLambdaInvokeRole(
@@ -105,9 +105,9 @@ export class CdkStack extends cdk.Stack {
             roleName: name,
             assumedBy: new iam.ServicePrincipal('appsync.amazonaws.com')
         });
-      
+        
         invokeRole.attachInlinePolicy(this.createOutputLambdaInvokePolicy(outputLambda));
-    
+
         return invokeRole;
     }
 
@@ -141,7 +141,7 @@ export class CdkStack extends cdk.Stack {
             }
         }`;
         const responseMappingTemplate = `$utils.toJson($context.result)`;
-        const getConsignmentsResolver = new appsync.CfnResolver(this, name, {
+        const getOutputResolver = new appsync.CfnResolver(this, name, {
             apiId: api.attrApiId,
             typeName: 'Query',
             fieldName: 'getOutput',
@@ -150,8 +150,8 @@ export class CdkStack extends cdk.Stack {
             responseMappingTemplate: responseMappingTemplate
         });
 
-        getConsignmentsResolver.addDependsOn(schema);
-        getConsignmentsResolver.addDependsOn(outputDataSource);
+        getOutputResolver.addDependsOn(schema);
+        getOutputResolver.addDependsOn(outputDataSource);
     }
 
     private createApiAccessKey(
